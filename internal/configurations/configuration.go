@@ -14,7 +14,7 @@ type Library struct {
 
 func NewLibrary() (*Library, error) {
 	v := viper.New()
-	v.SetConfigName("default")
+	v.SetConfigName("library")
 	v.SetConfigType("yml")
 	v.AddConfigPath(".")
 	v.AddConfigPath("./config")
