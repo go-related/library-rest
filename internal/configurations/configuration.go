@@ -8,12 +8,14 @@ import (
 
 type Library struct {
 	DbConnectionString string
+	Port               string
+	EnableMigrations   bool
 }
 
 func NewLibrary() (*Library, error) {
 	v := viper.New()
 	v.SetConfigName("default")
-	v.SetConfigType("yaml")
+	v.SetConfigType("yml")
 	v.AddConfigPath(".")
 	v.AddConfigPath("./config")
 	if err := v.ReadInConfig(); err != nil {
