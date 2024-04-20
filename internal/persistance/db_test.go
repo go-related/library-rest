@@ -50,7 +50,7 @@ type RequestItem struct {
 	err         error
 }
 
-func (rq *RequestItem) SetupCreate(db *mockDb) {
+func (rq *RequestItem) SetupQuery(db *mockDb) {
 	//mock.ExpectExec doesnt work with postgress driver very well
 	if rq.returnError {
 		db.SqlMock.ExpectBegin()

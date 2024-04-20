@@ -52,7 +52,7 @@ func TestCreateAuthor(t *testing.T) {
 			defer cancel()
 			db, err := NewMockDb()
 			require.NoError(t, err)
-			test.requestItem.SetupCreate(db)
+			test.requestItem.SetupQuery(db)
 
 			// act
 			result, err := db.Db.CreateAuthor(ctx, test.requestItem.item.(models.Author))
