@@ -2,7 +2,9 @@ package services
 
 import (
 	"context"
+	"errors"
 	"github.com/go-related/library-rest/internal/models"
+	"gorm.io/gorm"
 )
 
 func (s *service) CreateAuthor(ctx context.Context, data models.Author) (*models.Author, error) {
@@ -38,7 +40,11 @@ func (s *service) GetAuthorById(ctx context.Context, Id uint) (*models.Author, e
 		return nil, ctx.Err()
 	default:
 	}
-	return s.Db.GetAuthorById(ctx, Id)
+	author, err := s.Db.GetAuthorById(ctx, Id)
+	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, NewServiceError("author not found")
+	}
+	return author, err
 }
 
 func (s *service) DeleteAuthor(ctx context.Context, Id uint) error {
