@@ -39,17 +39,18 @@ func NewHandler(bookService services.Service, router *gin.Engine) *Handler {
 
 func AbortWithMessage(c *gin.Context, status int, err error, message string) {
 	logrus.WithError(err).Error(message)
-	var badRequest *services.ServiceError
 
+	// if custom validation error update status and message
+	var badRequest *services.ServiceError
 	if errors.As(err, &badRequest) {
 		status = http.StatusBadRequest
 		message = err.Error()
 	}
-	errorData := Response{
+
+	c.AbortWithStatusJSON(status, Response{
 		StatusCode: status,
 		Err:        errors.New(message),
-	}
-	c.AbortWithStatusJSON(status, errorData)
+	})
 }
 
 func getParamUInt(c *gin.Context, paramName string) (uint, error) {
