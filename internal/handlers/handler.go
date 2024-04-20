@@ -2,15 +2,16 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/go-related/library-rest/internal/persistance"
+	"github.com/go-related/library-rest/internal/services"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"net/http"
+	"strconv"
 )
 
 type Handler struct {
-	BookDb persistance.BooksDB
-	Engine *gin.Engine
+	Service services.Service
+	Engine  *gin.Engine
 }
 
 type Response struct {
@@ -18,11 +19,12 @@ type Response struct {
 	Err        error
 }
 
-func NewHandler(bookDb persistance.BooksDB, router *gin.Engine) *Handler {
+func NewHandler(bookService services.Service, router *gin.Engine) *Handler {
 	handler := &Handler{
-		BookDb: bookDb,
-		Engine: router,
+		Service: bookService,
+		Engine:  router,
 	}
+	SetupHealth(router)
 	v1 := router.Group("/v1/api")
 
 	// register authors
@@ -37,9 +39,21 @@ func NewHandler(bookDb persistance.BooksDB, router *gin.Engine) *Handler {
 
 func AbortWithMessage(c *gin.Context, status int, err error, message string) {
 	logrus.WithError(err).Error(message)
+	var badRequest *services.ServiceError
+
+	if errors.As(err, &badRequest) {
+		status = http.StatusBadRequest
+		message = err.Error()
+	}
 	errorData := Response{
 		StatusCode: status,
 		Err:        errors.New(message),
 	}
-	c.AbortWithStatusJSON(http.StatusInternalServerError, errorData)
+	c.AbortWithStatusJSON(status, errorData)
+}
+
+func getParamUInt(c *gin.Context, paramName string) (uint, error) {
+	id := c.Params.ByName(paramName)
+	idValue, err := strconv.ParseUint(id, 10, 32)
+	return uint(idValue), err
 }

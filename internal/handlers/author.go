@@ -4,16 +4,19 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-related/library-rest/internal/models"
 	"net/http"
-	"strconv"
 )
 
+type Author struct {
+	Name string `json:"name"`
+}
+
 func (h *Handler) GetAuthors(c *gin.Context) {
-	type QueryParameter struct {
-		Limit  string `form:"limit,default=5" binding:"numeric"`
-		Offset string `form:"offset,default=0" binding:"numeric"`
-	}
+	//type QueryParameter struct {
+	//	Limit  string `form:"limit,default=5" binding:"numeric"`
+	//	Offset string `form:"offset,default=0" binding:"numeric"`
+	//}
 	//TODO make uses of the pagination
-	result, err := h.BookDb.GetAllAuthors(c.Request.Context())
+	result, err := h.Service.GetAllAuthors(c.Request.Context())
 	if err != nil {
 		AbortWithMessage(c, http.StatusInternalServerError, err, "failed to load authors")
 		return
@@ -22,14 +25,12 @@ func (h *Handler) GetAuthors(c *gin.Context) {
 }
 
 func (h *Handler) GetAuthor(c *gin.Context) {
-	id := c.Params.ByName("id")
-
-	idValue, err := strconv.ParseUint(id, 10, 32)
+	id, err := getParamUInt(c, "id")
 	if err != nil {
 		AbortWithMessage(c, http.StatusBadRequest, err, "error converting id to int")
 		return
 	}
-	result, err := h.BookDb.GetAuthorById(c.Request.Context(), uint(idValue))
+	result, err := h.Service.GetAuthorById(c.Request.Context(), id)
 	if err != nil {
 		AbortWithMessage(c, http.StatusInternalServerError, err, "failed to load author")
 		return
@@ -38,14 +39,13 @@ func (h *Handler) GetAuthor(c *gin.Context) {
 }
 
 func (h *Handler) DeleteAuthor(c *gin.Context) {
-	id := c.Params.ByName("id")
-	idValue, err := strconv.ParseUint(id, 10, 32)
+	id, err := getParamUInt(c, "id")
 	if err != nil {
 		AbortWithMessage(c, http.StatusBadRequest, err, "error converting id to int")
 		return
 	}
 
-	err = h.BookDb.DeleteAuthor(c.Request.Context(), uint(idValue))
+	err = h.Service.DeleteAuthor(c.Request.Context(), id)
 	if err != nil {
 		AbortWithMessage(c, http.StatusInternalServerError, err, "failed to delete author")
 		return
@@ -57,9 +57,6 @@ func (h *Handler) DeleteAuthor(c *gin.Context) {
 
 func (h *Handler) CreateAuthor(c *gin.Context) {
 	// prepare input
-	type Author struct {
-		Name string `json:"name"`
-	}
 	var input Author
 	err := c.BindJSON(&input)
 	if err != nil {
@@ -70,7 +67,7 @@ func (h *Handler) CreateAuthor(c *gin.Context) {
 		PublicName: input.Name,
 	}
 	// execute
-	data, err := h.BookDb.CreateAuthor(c.Request.Context(), authorData)
+	data, err := h.Service.CreateAuthor(c.Request.Context(), authorData)
 	if err != nil {
 		AbortWithMessage(c, http.StatusInternalServerError, err, "failed to create author")
 		return
@@ -79,16 +76,13 @@ func (h *Handler) CreateAuthor(c *gin.Context) {
 }
 
 func (h *Handler) UpdateAuthor(c *gin.Context) {
-	id := c.Params.ByName("id")
-	idValue, err := strconv.ParseUint(id, 10, 32)
+	id, err := getParamUInt(c, "id")
 	if err != nil {
 		AbortWithMessage(c, http.StatusBadRequest, err, "error converting id to int")
 		return
 	}
 	// prepare the input
-	type Author struct {
-		Name string `json:"name"`
-	}
+
 	var input Author
 	err = c.BindJSON(&input)
 	if err != nil {
@@ -98,10 +92,10 @@ func (h *Handler) UpdateAuthor(c *gin.Context) {
 	authorData := models.Author{
 		PublicName: input.Name,
 	}
-	authorData.ID = uint(idValue)
+	authorData.ID = id
 
 	// update
-	err = h.BookDb.UpdateAuthor(c.Request.Context(), authorData)
+	err = h.Service.UpdateAuthor(c.Request.Context(), authorData)
 	if err != nil {
 		AbortWithMessage(c, http.StatusInternalServerError, err, "failed to update author")
 		return

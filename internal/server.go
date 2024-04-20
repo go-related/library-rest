@@ -21,12 +21,6 @@ func NewServer(config *configurations.Library) (*Server, error) {
 	}
 	handler := handlers.NewHandler(booksDb, router)
 
-	router.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "hello world",
-		})
-	})
-
 	err = router.Run(fmt.Sprintf(":%s", config.Port))
 	if err != nil {
 		logrus.WithError(err).Errorf("Setting up service failed.")
