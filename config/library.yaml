@@ -1,0 +1,2 @@
+library:
+  dbConnectionString: "host=localhost user=user password=1234 dbname=library port=5432 sslmode=disable"
