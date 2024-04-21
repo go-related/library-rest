@@ -1,7 +1,6 @@
 package persistance
 
 import (
-	"context"
 	"database/sql/driver"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/go-related/library-rest/internal/models"
@@ -9,7 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
-	"time"
 )
 
 func TestCreateAuthor(t *testing.T) {
@@ -48,14 +46,12 @@ func TestCreateAuthor(t *testing.T) {
 	for _, test := range testCases {
 		t.Run(test.name, func(t *testing.T) {
 			// arrange
-			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-			defer cancel()
 			db, err := NewMockDb()
 			require.NoError(t, err)
 			test.requestItem.SetupQuery(db)
 
 			// act
-			result, err := db.Db.CreateAuthor(ctx, test.requestItem.item.(models.Author))
+			result, err := db.Db.CreateAuthor(test.requestItem.item.(models.Author))
 
 			// assert
 			if test.requestItem.returnError {
