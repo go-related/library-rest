@@ -16,6 +16,8 @@ type Server struct {
 
 func NewServer(config *configurations.Library) (*Server, error) {
 	router := gin.Default()
+	router.Use(handlers.CORSMiddleware())
+
 	booksDb, err := persistance.NewBooks(config.DbConnectionString)
 	if err != nil {
 		logrus.WithError(err).Fatal("couldn't connect to db")

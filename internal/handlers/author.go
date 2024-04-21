@@ -45,7 +45,7 @@ func (h *Handler) GetAuthors(c *gin.Context) {
 	for _, item := range result {
 		output = append(output, convertAuthorToDTO(item))
 	}
-	c.IndentedJSON(http.StatusOK, output)
+	returnOk(c, http.StatusOK, output)
 }
 
 func (h *Handler) GetAuthor(c *gin.Context) {
@@ -59,7 +59,7 @@ func (h *Handler) GetAuthor(c *gin.Context) {
 		AbortWithMessage(c, http.StatusInternalServerError, err, "failed to load author")
 		return
 	}
-	c.IndentedJSON(http.StatusOK, convertAuthorToDTO(result))
+	returnOk(c, http.StatusOK, convertAuthorToDTO(result))
 }
 
 func (h *Handler) DeleteAuthor(c *gin.Context) {
@@ -74,9 +74,7 @@ func (h *Handler) DeleteAuthor(c *gin.Context) {
 		AbortWithMessage(c, http.StatusInternalServerError, err, "failed to delete author")
 		return
 	}
-	c.IndentedJSON(http.StatusNoContent, gin.H{
-		"message": "Resource deleted successfully",
-	})
+	c.IndentedJSON(http.StatusNoContent, gin.H{})
 }
 
 func (h *Handler) CreateAuthor(c *gin.Context) {
@@ -92,7 +90,7 @@ func (h *Handler) CreateAuthor(c *gin.Context) {
 		AbortWithMessage(c, http.StatusInternalServerError, err, "failed to create author")
 		return
 	}
-	c.IndentedJSON(http.StatusCreated, convertAuthorToDTO(data))
+	returnOk(c, http.StatusCreated, convertAuthorToDTO(data))
 }
 
 func (h *Handler) UpdateAuthor(c *gin.Context) {
@@ -116,5 +114,5 @@ func (h *Handler) UpdateAuthor(c *gin.Context) {
 		AbortWithMessage(c, http.StatusInternalServerError, err, "failed to update author")
 		return
 	}
-	c.IndentedJSON(http.StatusOK, convertAuthorToDTO(input))
+	returnOk(c, http.StatusAccepted, convertAuthorToDTO(input))
 }
