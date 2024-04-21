@@ -79,9 +79,5 @@ func (b *booksDb) GetAuthorById(ctx context.Context, Id uint) (*models.Author, e
 	}
 	var output models.Author
 	result := b.Db.Model(&models.Author{}).First(&output, Id)
-	if result.Error != nil {
-		//logrus.WithError(result.Error).Error("couldn't load author")
-		return nil, errors.Wrap(result.Error, "")
-	}
 	return &output, result.Error
 }
