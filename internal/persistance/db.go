@@ -1,7 +1,6 @@
 package persistance
 
 import (
-	"context"
 	"github.com/go-related/library-rest/internal/models"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
@@ -9,11 +8,11 @@ import (
 )
 
 type BooksDB interface {
-	CreateAuthor(ctx context.Context, data models.Author) (*models.Author, error)
-	UpdateAuthor(ctx context.Context, data models.Author) error
-	DeleteAuthor(ctx context.Context, Id uint) error
-	GetAllAuthors(ctx context.Context) ([]*models.Author, error)
-	GetAuthorById(ctx context.Context, Id uint) (*models.Author, error)
+	CreateAuthor(data models.Author) (*models.Author, error)
+	UpdateAuthor(data models.Author) error
+	DeleteAuthor(Id uint) error
+	GetAllAuthors() ([]*models.Author, error)
+	GetAuthorById(Id uint) (*models.Author, error)
 
 	//CreateGenre(ctx context.Context, data models.Genre) (*models.Genre, error)
 	//UpdateGenre(ctx context.Context, data models.Genre) error

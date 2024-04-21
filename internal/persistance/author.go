@@ -1,18 +1,11 @@
 package persistance
 
 import (
-	"context"
 	"github.com/go-related/library-rest/internal/models"
 	"github.com/pkg/errors"
 )
 
-func (b *booksDb) CreateAuthor(ctx context.Context, data models.Author) (*models.Author, error) {
-	// cancellation check
-	select {
-	case <-ctx.Done():
-		return nil, ctx.Err()
-	default:
-	}
+func (b *booksDb) CreateAuthor(data models.Author) (*models.Author, error) {
 	result := b.Db.Model(&models.Author{}).Create(&data)
 	if result.Error != nil {
 		return nil, errors.Wrap(result.Error, "couldn't create the author")
@@ -20,13 +13,8 @@ func (b *booksDb) CreateAuthor(ctx context.Context, data models.Author) (*models
 	return &data, result.Error
 }
 
-func (b *booksDb) UpdateAuthor(ctx context.Context, data models.Author) error {
-	select {
-	case <-ctx.Done():
-		return ctx.Err()
-	default:
-	}
-	currentData, err := b.GetAuthorById(ctx, data.ID)
+func (b *booksDb) UpdateAuthor(data models.Author) error {
+	currentData, err := b.GetAuthorById(data.ID)
 	if err != nil {
 		return err
 	}
@@ -39,13 +27,8 @@ func (b *booksDb) UpdateAuthor(ctx context.Context, data models.Author) error {
 	return result.Error
 }
 
-func (b *booksDb) DeleteAuthor(ctx context.Context, Id uint) error {
-	select {
-	case <-ctx.Done():
-		return ctx.Err()
-	default:
-	}
-	currentData, err := b.GetAuthorById(ctx, Id)
+func (b *booksDb) DeleteAuthor(Id uint) error {
+	currentData, err := b.GetAuthorById(Id)
 	if err != nil {
 		return err
 	}
@@ -57,12 +40,7 @@ func (b *booksDb) DeleteAuthor(ctx context.Context, Id uint) error {
 	return nil
 }
 
-func (b *booksDb) GetAllAuthors(ctx context.Context) ([]*models.Author, error) {
-	select {
-	case <-ctx.Done():
-		return nil, ctx.Err()
-	default:
-	}
+func (b *booksDb) GetAllAuthors() ([]*models.Author, error) {
 	var outputList []*models.Author
 	result := b.Db.Model(&models.Author{}).Find(&outputList)
 	if result.Error != nil {
@@ -71,12 +49,7 @@ func (b *booksDb) GetAllAuthors(ctx context.Context) ([]*models.Author, error) {
 	return outputList, result.Error
 }
 
-func (b *booksDb) GetAuthorById(ctx context.Context, Id uint) (*models.Author, error) {
-	select {
-	case <-ctx.Done():
-		return nil, ctx.Err()
-	default:
-	}
+func (b *booksDb) GetAuthorById(Id uint) (*models.Author, error) {
 	var output models.Author
 	result := b.Db.Model(&models.Author{}).First(&output, Id)
 	return &output, result.Error
