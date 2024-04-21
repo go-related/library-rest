@@ -18,8 +18,6 @@ COPY --from=build /app/bin/libraryservice /app/bin/libraryservice
 COPY $FILEDIR/${FILENAME} /app/bin/config/${FILENAME}
 
 #start command
-#ENTRYPOINT ["/bin/sh", "-c", "./bin/fileservice run --file \"$FILEPATH\" --sleep \"$SLEEP\""]
-
 ENTRYPOINT ["/app/bin/libraryservice"]
 
 

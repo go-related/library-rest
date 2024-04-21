@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (s *service) CreateAuthor(ctx context.Context, data models.Author) (*models.Author, error) {
+func (s *service) CreateAuthor(ctx context.Context, data *models.Author) (*models.Author, error) {
 	// cancellation check
 	select {
 	case <-ctx.Done():
@@ -18,10 +18,10 @@ func (s *service) CreateAuthor(ctx context.Context, data models.Author) (*models
 	if err != nil {
 		return nil, err
 	}
-	return s.Db.CreateAuthor(data)
+	return s.Db.CreateAuthor(*data)
 }
 
-func (s *service) UpdateAuthor(ctx context.Context, data models.Author) error {
+func (s *service) UpdateAuthor(ctx context.Context, data *models.Author) error {
 	select {
 	case <-ctx.Done():
 		return ctx.Err()
@@ -31,7 +31,7 @@ func (s *service) UpdateAuthor(ctx context.Context, data models.Author) error {
 	if err != nil {
 		return err
 	}
-	return s.Db.UpdateAuthor(data)
+	return s.Db.UpdateAuthor(*data)
 }
 
 func (s *service) GetAuthorById(ctx context.Context, Id uint) (*models.Author, error) {
@@ -69,7 +69,11 @@ func (s *service) GetAllAuthors(ctx context.Context) ([]*models.Author, error) {
 	return s.Db.GetAllAuthors()
 }
 
-func (s *service) validateAuthor(data models.Author) error {
+func (s *service) validateAuthor(data *models.Author) error {
+	if data == nil {
+		return NewServiceError("invalid input")
+	}
+
 	if data.PublicName == "" {
 		return NewServiceError("invalid public_name for the author")
 	}

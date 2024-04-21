@@ -6,8 +6,28 @@ import (
 	"net/http"
 )
 
-type Author struct {
+type AuthorDto struct {
+	Id   uint   `json:"id"`
 	Name string `json:"name"`
+}
+
+func convertAuthorToDTO(sc *models.Author) *AuthorDto {
+	return &AuthorDto{
+		Id:   sc.Model.ID,
+		Name: sc.PublicName,
+	}
+}
+
+func bindToAuthor(c *gin.Context) (*models.Author, error) {
+	var input AuthorDto
+	err := c.BindJSON(&input)
+	if err != nil {
+		return nil, err
+	}
+	authorData := models.Author{
+		PublicName: input.Name,
+	}
+	return &authorData, nil
 }
 
 func (h *Handler) GetAuthors(c *gin.Context) {
@@ -21,7 +41,11 @@ func (h *Handler) GetAuthors(c *gin.Context) {
 		AbortWithMessage(c, http.StatusInternalServerError, err, "failed to load authors")
 		return
 	}
-	c.IndentedJSON(http.StatusOK, result)
+	var output []*AuthorDto
+	for _, item := range result {
+		output = append(output, convertAuthorToDTO(item))
+	}
+	c.IndentedJSON(http.StatusOK, output)
 }
 
 func (h *Handler) GetAuthor(c *gin.Context) {
@@ -35,7 +59,7 @@ func (h *Handler) GetAuthor(c *gin.Context) {
 		AbortWithMessage(c, http.StatusInternalServerError, err, "failed to load author")
 		return
 	}
-	c.IndentedJSON(http.StatusOK, result)
+	c.IndentedJSON(http.StatusOK, convertAuthorToDTO(result))
 }
 
 func (h *Handler) DeleteAuthor(c *gin.Context) {
@@ -57,22 +81,18 @@ func (h *Handler) DeleteAuthor(c *gin.Context) {
 
 func (h *Handler) CreateAuthor(c *gin.Context) {
 	// prepare input
-	var input Author
-	err := c.BindJSON(&input)
+	input, err := bindToAuthor(c)
 	if err != nil {
 		AbortWithMessage(c, http.StatusBadRequest, err, "error binding to json")
 		return
 	}
-	authorData := models.Author{
-		PublicName: input.Name,
-	}
 	// execute
-	data, err := h.Service.CreateAuthor(c.Request.Context(), authorData)
+	data, err := h.Service.CreateAuthor(c.Request.Context(), input)
 	if err != nil {
 		AbortWithMessage(c, http.StatusInternalServerError, err, "failed to create author")
 		return
 	}
-	c.IndentedJSON(http.StatusCreated, data)
+	c.IndentedJSON(http.StatusCreated, convertAuthorToDTO(data))
 }
 
 func (h *Handler) UpdateAuthor(c *gin.Context) {
@@ -83,22 +103,18 @@ func (h *Handler) UpdateAuthor(c *gin.Context) {
 	}
 	// prepare the input
 
-	var input Author
-	err = c.BindJSON(&input)
+	input, err := bindToAuthor(c)
 	if err != nil {
 		AbortWithMessage(c, http.StatusBadRequest, err, err.Error())
 		return
 	}
-	authorData := models.Author{
-		PublicName: input.Name,
-	}
-	authorData.ID = id
+	input.ID = id
 
 	// update
-	err = h.Service.UpdateAuthor(c.Request.Context(), authorData)
+	err = h.Service.UpdateAuthor(c.Request.Context(), input)
 	if err != nil {
 		AbortWithMessage(c, http.StatusInternalServerError, err, "failed to update author")
 		return
 	}
-	c.IndentedJSON(http.StatusOK, authorData)
+	c.IndentedJSON(http.StatusOK, convertAuthorToDTO(input))
 }
