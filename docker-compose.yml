@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  react-app:
+    image: library-rest-fe
+    ports:
+      - "8080:80"
+    environment:
+      - REACT_APP_URL="http://api:8081"
+    networks:
+      - mynetwork
+#    depends_on:
+#      api:
+#        condition: service_healthy
+  api:
+    image: libarary-1
+    ports:
+      - "8081:8081"
+    networks:
+      - mynetwork
+    healthcheck:
+      test: [ "CMD", "curl", "--location", "http://localhost:8081" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+networks:
+  mynetwork:
+    name: mynetwork

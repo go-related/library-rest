@@ -23,7 +23,7 @@
   1. Build the image and run it
 
        ``` shell
-      docker build -t libarary-1 .
+      docker build  -t libarary-1 --build-arg FILEDIR="./config" --build-arg FILENAME="library.local.yaml" --build-arg TARGETFILENAME="library.yaml" .
 
       docker rm -f libraryservice
       docker run --name libraryservice -p 8081:8081 -it libarary-1

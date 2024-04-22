@@ -10,12 +10,14 @@ RUN  GOOS=linux GOARCH=amd64 go build -o bin/libraryservice cmd/*go
 
 ############################################### FINAL ##############################################
 FROM alpine
-ARG FILENAME="library.yaml"
+ARG FILENAME="library.local.yaml"
+ARG TARGETFILENAME="library.yaml"
 ARG FILEDIR="./config"
+
 
 WORKDIR /app
 COPY --from=build /app/bin/libraryservice /app/bin/libraryservice
-COPY $FILEDIR/${FILENAME} /app/bin/config/${FILENAME}
+COPY $FILEDIR/${FILENAME} /app/config/${TARGETFILENAME}
 
 #start command
 ENTRYPOINT ["/app/bin/libraryservice"]
