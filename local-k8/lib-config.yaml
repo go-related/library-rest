@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: library-config
+data:
+  db-host: "db-service"
+  db-name: "lib2"
+  db-port: "5433"
+  port: "8081"
+  enableMigrations: "true"
+

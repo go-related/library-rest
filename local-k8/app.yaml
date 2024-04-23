@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+        - name: api
+          image: 'jtabaku/generalimages:v1.0'
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8081
+          env:
+            - name: db-password
+              valueFrom:
+                secretKeyRef:
+                  name: library-secret
+                  key: db-password
+            - name: db-user
+              valueFrom:
+                secretKeyRef:
+                  name: library-secret
+                  key: db-user
+            - name: db-host
+              valueFrom:
+                configMapKeyRef:
+                  name: library-config
+                  key: db-host
+            - name: db-name
+              valueFrom:
+                configMapKeyRef:
+                  name: library-config
+                  key: db-name
+            - name: db-port
+              valueFrom:
+                configMapKeyRef:
+                  name: library-config
+                  key: db-port
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-service
+spec:
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 8081
+      targetPort: 8081
+      nodePort: 30100
+  selector:
+    app: api
+

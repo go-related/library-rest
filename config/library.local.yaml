@@ -1,3 +1,8 @@
 dbConnectionString: "host=host.docker.internal user=user password=1234 dbname=lib2 port=5432 sslmode=disable"
 port: 8081
 enableMigrations: true
+db-user: "user"
+db-password: "1234"
+db-host: "host.docker.internal"
+db-name: "lib2"
+db-port: "5432"

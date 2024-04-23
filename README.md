@@ -27,4 +27,7 @@
 
       docker rm -f libraryservice
       docker run --name libraryservice -p 8081:8081 -it libarary-1
+     
+     
+      docker build  -t libarary-k8 --build-arg FILEDIR="./config" --build-arg FILENAME="library.yaml" --build-arg TARGETFILENAME="library.yaml" .
        ```
