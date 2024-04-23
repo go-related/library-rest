@@ -29,5 +29,8 @@
       docker run --name libraryservice -p 8081:8081 -it libarary-1
      
      
-      docker build  -t libarary-k8 --build-arg FILEDIR="./config" --build-arg FILENAME="library.yaml" --build-arg TARGETFILENAME="library.yaml" .
-       ```
+        docker build  -t libarary-k8:v3.0 --build-arg FILEDIR="./config" --build-arg FILENAME="library.k8.yaml" --build-arg TARGETFILENAME="library.yaml" .
+        docker tag libarary-k8:v3.0 jtabaku/generalimages:libaray-api-v3.0
+        docker push  jtabaku/generalimages:libaray-api-v3.0
+     
+     ```

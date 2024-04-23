@@ -1,0 +1,3 @@
+dbConnectionString: "host=db-service user=postgres password=1234 dbname=lib2 port=5433 sslmode=disable"
+port: 8081
+enableMigrations: true
