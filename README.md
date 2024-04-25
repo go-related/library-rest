@@ -32,5 +32,8 @@
         docker build  -t libarary-k8:v3.0 --build-arg FILEDIR="./config" --build-arg FILENAME="library.k8.yaml" --build-arg TARGETFILENAME="library.yaml" .
         docker tag libarary-k8:v3.0 jtabaku/generalimages:libaray-api-v3.0
         docker push  jtabaku/generalimages:libaray-api-v3.0
+
+
+        minikube service web-service --url
      
      ```

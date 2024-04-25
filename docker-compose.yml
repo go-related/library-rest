@@ -1,18 +1,15 @@
 version: '3.8'
 services:
   react-app:
-    image: library-rest-fe
+    image: library-local-fe
     ports:
       - "8080:80"
     environment:
-      - REACT_APP_URL="http://api:8081"
+      - REACT_APP_API_URL="http://host.docker.internal:8081"
     networks:
       - mynetwork
-#    depends_on:
-#      api:
-#        condition: service_healthy
   api:
-    image: libarary-1
+    image: libarary-local-api
     ports:
       - "8081:8081"
     networks:
@@ -22,7 +19,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
-
 networks:
   mynetwork:
     name: mynetwork
